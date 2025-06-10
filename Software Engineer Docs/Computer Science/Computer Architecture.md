@@ -21,8 +21,8 @@ https://sist.sathyabama.ac.in/sist_coursematerial/uploads/SBSA1101.pdf
 
 > 🧠 Goal: Understand how core computer components interact.
 > 
-- **Von Neumann vs Harvard Architecture**
-    
+<details>
+<summary>Von Neumann vs Harvard Architecture</summary>    
     The Von Neumann and Harvard architectures are two fundamental computer architectures that define how a computer's CPU interacts with its memory. The key difference lies in how they handle instructions (program code) and data.
     
     Here's a breakdown of each and their comparison:
@@ -102,3 +102,4 @@ https://sist.sathyabama.ac.in/sist_coursematerial/uploads/SBSA1101.pdf
     Export to Sheets
     
     In essence, the Von Neumann architecture prioritizes simplicity and flexibility, while the Harvard architecture prioritizes performance by allowing parallel access to instructions and data. Modern computer systems often incorporate elements of both to achieve a balance of performance and flexibility, particularly through the use of cache memory.
+</details>
