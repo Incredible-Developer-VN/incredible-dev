@@ -79,3 +79,118 @@ These components work together seamlessly to execute every instruction and manag
 | **Use Cases** | Only used by the CPU internally; not written by humans directly. | Device drivers, embedded systems, OS kernels, performance-critical code. |
 
 In essence, **machine language** is what the computer *understands*, while **assembly language** is a human-friendly (but still very technical) way to *write* those instructions. All high-level programming languages (like Python, Java, C++) eventually get compiled or interpreted down to machine language to be executed by the CPU.
+
+## 📙 **Stage 3: Instruction Set Architecture (ISA)**
+
+> 🧠 Goal: Understand how different CPUs interpret and execute programs.
+> 
+
+### Instruction Formats
+
+Instruction formats define how machine-level instructions are structured in binary. They're like blueprints for the CPU, telling it how to interpret a command.
+
+Here's a quick breakdown of their key aspects:
+
+- **Opcode:** This is the core part, indicating the operation (e.g., ADD, LOAD, JUMP).
+- **Operands:** These specify the data or where the data is located (registers, memory addresses, or immediate values).
+- **Addressing Mode:** This explains how to find the actual data in memory.
+
+---
+
+### Common Instruction Formats:
+
+- **Zero-Address (Stack-Based):** Operates on data implicitly from a stack (e.g., `ADD` simply adds the top two stack items).
+- **One-Address (Accumulator-Based):** One explicit operand, with the other implicitly in a special **accumulator** register (e.g., `ADD X` means `AC = AC + M[X]`).
+- **Two-Address:** Two explicit operands, where one often acts as both source and destination (e.g., `ADD R1, R2` could mean `R1 = R1 + R2`). Common in **CISC** (Complex Instruction Set Computer) architectures like x86.
+- **Three-Address:** Three explicit operands (two sources, one destination), allowing for operations like `R1 = R2 + R3` in a single instruction. Prevalent in **RISC** (Reduced Instruction Set Computer) architectures like ARM and MIPS.
+
+---
+
+### Instruction Length:
+
+- **Fixed-Length:** All instructions have the same size (e.g., 32 bits). This simplifies CPU design and pipelining. Common in RISC.
+- **Variable-Length:** Instructions can have different sizes, offering more flexibility but complicating CPU design. Common in CISC.
+
+In short, instruction formats are vital for how software communicates with hardware, impacting efficiency, compatibility, and CPU design.
+
+### Addressing Modes
+
+A CPU determines where an instruction's data is located by addressing modes. They're vital for flexibility and efficient code.
+
+---
+
+### Common Addressing Modes:
+
+- **Immediate:** The data itself is right in the instruction (e.g., `MOV R1, #10`).
+- **Register:** Data is in a CPU register (e.g., `ADD R1, R2`).
+- **Direct:** The instruction provides the exact memory address of the data (e.g., `LOAD R1, [1000]`).
+- **Indirect:** The instruction points to a location that *holds the address* of the data (e.g., `LOAD R1, [[1000]]`).
+- **Register Indirect:** A register holds the memory address of the data (e.g., `LOAD R1, (R2)`).
+- **Indexed:** An offset is added to a register's content to find the address (e.g., `LOAD R1, 100(R2)`). Great for arrays.
+- **Base-Register:** Similar to indexed, but often used for program relocation or accessing structure fields.
+- **Relative (PC-Relative):** An offset is added to the Program Counter (PC) to find the address. Used for jumps within a program.
+
+These modes are key to how programs access and manipulate data, impacting performance and code design.
+
+### Data Transfer, Arithmetic, Branch Instructions
+
+Computer instructions fall into key categories that enable a program to function:
+
+---
+
+### 1. Data Transfer Instructions
+
+**Purpose:** Move data around the system without changing its value. Think of them as "copy" commands.
+
+- **Examples:**
+    - **LOAD (LD):** Get data from memory and put it in a register.
+    - **STORE (ST):** Take data from a register and put it in memory.
+    - **MOVE (MOV):** Copy data between registers or a register and memory.
+    - **PUSH/POP:** Move data to/from the stack.
+
+---
+
+### 2. Arithmetic Instructions
+
+**Purpose:** Perform mathematical calculations on data.
+
+- **Examples:**
+    - **ADD/SUBTRACT:** Perform addition or subtraction.
+    - **MULTIPLY/DIVIDE:** Perform multiplication or division.
+    - **INCREMENT/DECREMENT:** Add or subtract 1.
+    - **COMPARE (CMP):** Compare two values, setting flags for later use (doesn't store a result).
+
+---
+
+### 3. Branch Instructions (Control Flow)
+
+**Purpose:** Change the normal, sequential order of program execution, allowing for loops, decisions, and function calls. They modify the **Program Counter (PC)**.
+
+- **Examples:**
+    - **UNCONDITIONAL JUMP/BRANCH (JMP/B):** Always go to a new location.
+    - **CONDITIONAL JUMP/BRANCH (Jcc / Bcc):** Jump only if a specific condition (based on flags from previous operations) is met (e.g., `JZ` - Jump if Zero).
+    - **CALL:** Jump to a subroutine and save the return address.
+    - **RETURN (RET):** Go back from a subroutine using the saved address.
+
+These three types of instructions are the fundamental building blocks for almost any task a computer performs.
+
+### RISC vs CISC Architecture
+
+RISC (Reduced Instruction Set Computer) vs. CISC (Complex Instruction Set Computer) are two different approaches to designing a CPU's instruction set.
+
+- **CISC:**
+    - **Goal:** Minimize instructions per program.
+    - **Characteristics:** Large, complex instruction set; variable-length instructions; direct memory operations.
+    - **Analogy:** A single, super-powerful tool that does many steps.
+    - **Examples:** x86 (Intel/AMD).
+    - **Pros:** Smaller code size, simpler for early compilers.
+    - **Cons:** Complex hardware, slower individual instructions, harder to pipeline.
+- **RISC:**
+    - **Goal:** Maximize instructions per clock cycle.
+    - **Characteristics:** Small, simple instruction set; fixed-length instructions; "load/store" only for memory access (all other operations on registers); many registers.
+    - **Analogy:** Many simple, specialized tools that work very fast.
+    - **Examples:** ARM, MIPS, RISC-V.
+    - **Pros:** Simpler hardware, faster execution (per instruction), better for pipelining, lower power.
+    - **Cons:** Larger code size, more complex compilers.
+
+**Modern Trend:** Most modern processors are a hybrid. CISC chips (like x86) internally translate complex instructions into simpler, RISC-like micro-operations for execution. RISC chips have also added some complexity. The choice depends on specific design goals and applications.
