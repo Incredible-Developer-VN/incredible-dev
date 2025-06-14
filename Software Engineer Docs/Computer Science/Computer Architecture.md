@@ -194,3 +194,54 @@ RISC (Reduced Instruction Set Computer) vs. CISC (Complex Instruction Set Comput
     - **Cons:** Larger code size, more complex compilers.
 
 **Modern Trend:** Most modern processors are a hybrid. CISC chips (like x86) internally translate complex instructions into simpler, RISC-like micro-operations for execution. RISC chips have also added some complexity. The choice depends on specific design goals and applications.
+
+## 📕 **Stage 4: CPU Microarchitecture & Pipelining**
+
+> 🧠 Goal: Understand internal CPU performance optimization.
+> 
+
+### CPU Microarchitecture
+
+CPU Microarchitecture is the **detailed hardware design** that implements a CPU's Instruction Set Architecture (ISA). It's *how* the CPU executes instructions, differentiating it from the ISA which defines *what* instructions it understands.
+
+Key elements include:
+
+- **Functional Units:** ALUs, FPUs, Load/Store Units that perform operations.
+- **Registers:** Fast, internal storage.
+- **Control Unit:** Orchestrates all operations.
+- **Data Paths:** Routes for data flow.
+- **Memory Hierarchy (Caches):** Fast, small memory layers to speed up data access.
+- **Pipelining:** Overlapping instruction execution stages (like an assembly line) for efficiency.
+- **ILP Techniques:** Superscalar (multiple instructions per cycle), Out-of-Order execution (reordering instructions for efficiency), Branch Prediction (guessing future program flow).
+
+It's crucial for **performance, power efficiency, cost, and even security** of a processor.
+
+### Pipelining: 5-Stage Pipeline (IF, ID, EX, MEM, WB)
+
+Pipelining is a CPU technique that runs multiple instruction stages concurrently, like an assembly line, to boost throughput. The common **5-Stage Pipeline** breaks instruction execution into:
+
+1. **IF (Instruction Fetch):** Get instruction from memory.
+2. **ID (Instruction Decode):** Decode instruction, read registers.
+3. **EX (Execute):** Perform operation (ALU, address calc).
+4. **MEM (Memory Access):** Read/write data from/to memory.
+5. **WB (Write Back):** Write results back to registers.
+
+Ideally, after the initial fill-up, one instruction completes every clock cycle, significantly increasing speed compared to non-pipelined execution, despite individual instructions still taking multiple cycles to finish. However, **hazards** can disrupt this ideal flow.
+
+### Hazards: Data, Control, Structural
+
+Here's a brief summary of CPU pipeline hazards:
+
+- **Data Hazards:** Occur when instructions need data that isn't yet available from a preceding instruction in the pipeline (e.g., trying to read a register before it's written). Solved by **stalling** (waiting) or **forwarding/bypassing** (sending data directly between stages).
+- **Control Hazards (Branch Hazards):** Occur with branch instructions, as the CPU doesn't know which instruction to fetch next until the branch condition is evaluated, causing potential misfetches. Solved by **stalling**, **predicting** the branch outcome (and flushing if wrong), or **delayed branches**.
+- **Structural Hazards:** Occur when two instructions need the same hardware resource at the same time (e.g., a single memory unit for both instruction fetch and data access). Solved by **stalling** or **duplicating resources** (e.g., separate instruction/data memories, multiple ALUs).
+
+All hazards reduce pipeline efficiency by causing **stalls** (wasted cycles).
+
+### Techniques: Forwarding, Stalling, Branch Prediction
+
+Here's a concise summary of the techniques:
+
+- **Forwarding (Bypassing):** Solves **data hazards** by sending an instruction's result directly from an earlier pipeline stage to a dependent instruction, avoiding stalls.
+- **Stalling:** A general technique that inserts "bubbles" (NOPs) into the pipeline, pausing execution when any **hazard** (data, control, structural) prevents normal flow. Simple but performance-limiting.
+- **Branch Prediction:** Addresses **control hazards** by guessing the outcome of branches and speculatively fetching instructions. If correct, pipeline flows smoothly; if incorrect, a misprediction penalty occurs (flushing and restarting).
