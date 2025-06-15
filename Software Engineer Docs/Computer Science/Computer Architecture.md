@@ -245,3 +245,80 @@ Here's a concise summary of the techniques:
 - **Forwarding (Bypassing):** Solves **data hazards** by sending an instruction's result directly from an earlier pipeline stage to a dependent instruction, avoiding stalls.
 - **Stalling:** A general technique that inserts "bubbles" (NOPs) into the pipeline, pausing execution when any **hazard** (data, control, structural) prevents normal flow. Simple but performance-limiting.
 - **Branch Prediction:** Addresses **control hazards** by guessing the outcome of branches and speculatively fetching instructions. If correct, pipeline flows smoothly; if incorrect, a misprediction penalty occurs (flushing and restarting).
+
+## 📒 **Stage 5: Memory Hierarchy**
+
+> 🧠 Goal: Know how memory hierarchy improves access speed and capacity.
+> 
+
+### The **Registers, Cache, RAM, and Disk** hierarchy
+
+The computer's **memory hierarchy** is a structured system designed to balance speed, cost, and capacity for data access. It works on the principle of **locality of reference**, meaning frequently accessed data is kept in faster, closer memory.
+
+Here's a brief overview, from fastest/most expensive to slowest/cheapest:
+
+1. **Registers:** Tiny, ultra-fast storage *within* the CPU, holding data currently being processed. Smallest capacity.
+2. **Cache (L1, L2, L3):** Small, fast memory between CPU and RAM, storing copies of frequently used data from RAM. L1 is fastest/smallest, L3 slowest/largest of the cache levels. Managed by hardware.
+3. **RAM (Main Memory):** Larger, volatile (requires power) working memory for the OS and active applications. Slower than cache, faster than disk.
+4. **Disk (Secondary Storage - HDD/SSD):** Very large, non-volatile (retains data without power) storage for all programs and data. Much slower than RAM. Used for long-term storage and virtual memory (swapping data with RAM).
+
+This hierarchy ensures the CPU can access data as quickly as possible, while providing ample storage at a reasonable cost.
+
+### Cache Organization: Direct, Set-Associative, Fully Associative
+
+How data is placed and found within the **Cache** is crucial for optimizing performance. There are three primary methods:
+
+- **Direct-Mapped Cache:**
+Each block of data from main memory has **only one specific location** where it can be stored in the cache. It's simple and fast to look up, but prone to **conflict misses** if frequently used data competes for the same spot.
+- **Fully Associative Cache:**
+Any block of data can be stored **anywhere** in the cache. This offers the **best hit rate** (fewest misses) because cache space is utilized most efficiently. However, it's extremely **complex and expensive** to implement due to the need for simultaneous comparisons across all locations.
+- **Set-Associative Cache:**
+This is a compromise between the two. The cache is divided into **sets**, and a data block can be stored anywhere **within its designated set**. This method provides **good performance** (fewer conflicts than Direct-Mapped) without the extreme complexity and cost of Fully Associative. Most modern CPUs use this type.
+
+### Replacement Policies (LRU, FIFO)
+
+When a cache is full and needs to bring in new data, a **replacement policy** decides which existing data to remove. The goal is to maximize the chance that future requests will find data in the cache (hit rate).
+
+Here are two common policies:
+
+1. **LRU (Least Recently Used):**
+    - **Concept:** Evicts the block that hasn't been accessed for the longest time.
+    - **Pros:** Generally provides very good performance by leveraging temporal locality.
+    - **Cons:** More complex to implement as it requires tracking access recency.
+2. **FIFO (First-In-First-Out):**
+    - **Concept:** Evicts the block that was loaded into the cache earliest, regardless of how often it's been used.
+    - **Pros:** Very simple to implement.
+    - **Cons:** Often leads to poor performance as it doesn't consider actual usage frequency, potentially removing frequently used items.
+    When a cache is full and needs to bring in new data, a **replacement policy** decides which existing data to remove.
+- 
+
+### Virtual Memory & Paging
+
+The user wants a short summary of Virtual Memory and Paging. I should focus on the core concepts of each, how they relate, and their main benefits.
+
+### Virtual Memory
+
+- **Concept:** An illusion that each program has its own large, contiguous memory space, regardless of physical RAM size.
+- **Purpose:** Allows running programs larger than physical RAM, enables multitasking, provides memory protection.
+- **Mechanism:** OS and MMU map virtual addresses to physical RAM addresses.
+
+### Paging
+
+- **Concept:** A technique to implement virtual memory by dividing memory into fixed-size blocks (virtual **pages** and physical **frames**).
+- **Mechanism:** Uses **page tables** for address translation. If a requested page isn't in RAM (**page fault**), the OS loads it from disk (swap space) into a free frame.
+- **Benefits:** Efficient use of fragmented physical memory, allows only necessary parts of a program to be in RAM (**demand paging**).
+
+Combine these into a concise summary.When a computer's physical RAM is insufficient, **Virtual Memory** creates the illusion that each program has its own large, dedicated memory space. This allows running programs larger than physical RAM and enables efficient multitasking and memory protection.
+
+### Bus Architectures: PCI, USB
+
+Bus architectures are communication pathways in a computer.
+
+- **PCI (Peripheral Component Interconnect):**
+    - An **internal bus** for connecting high-speed expansion cards (like graphics cards, network cards) directly to the motherboard.
+    - Mainly superseded by **PCI Express (PCIe)**, which uses faster serial communication.
+- **USB (Universal Serial Bus):**
+    - An **external bus** for standardizing connections of a wide range of peripherals (keyboards, mice, printers, external drives).
+    - Supports hot-plugging, power delivery, and is ubiquitous for external device connectivity.
+
+**In short:** PCI is for internal, high-performance components, while USB is for versatile, convenient external device connections.
