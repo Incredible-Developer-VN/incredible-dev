@@ -322,3 +322,190 @@ Bus architectures are communication pathways in a computer.
     - Supports hot-plugging, power delivery, and is ubiquitous for external device connectivity.
 
 **In short:** PCI is for internal, high-performance components, while USB is for versatile, convenient external device connections.
+
+## 📓 **Stage 6: Input/Output Systems**
+
+> 🧠 Goal: Understand how data moves between CPU and external devices.
+> 
+
+### I/O Techniques: Programmed, Interrupt-Driven, DMA
+
+I/O techniques facilitate communication between the CPU and peripherals.
+
+1. **Programmed I/O (PIO):** The CPU directly controls data transfer and continuously checks device status (**polling**), wasting CPU cycles. Simple but inefficient for slow or large transfers.
+2. **Interrupt-Driven I/O:** The CPU initiates transfer, then continues other tasks. The device alerts the CPU with an **interrupt** when ready, and the CPU executes an **Interrupt Service Routine (ISR)** to handle the transfer. Better CPU utilization than PIO, but still involves CPU for data movement and has context-switching overhead.
+3. **Direct Memory Access (DMA):** A dedicated **DMA controller** handles data transfer directly between the I/O device and memory, without CPU intervention (after initial setup). The CPU is only interrupted upon completion. Most efficient for large, high-speed data transfers, maximizing CPU availability.
+
+### Memory-Mapped I/O vs Isolated I/O
+
+These are two ways a CPU communicates with I/O devices (like keyboards or printers).
+
+- **Memory-Mapped I/O (MMIO):**
+    - Treats I/O device registers as if they were **regular memory locations**.
+    - CPU uses standard memory instructions (`LOAD`, `STORE`) to interact with devices.
+    - **Pros:** Simpler CPU design, uses all memory addressing modes.
+    - **Cons:** Reduces available memory address space, potential cache issues.
+- **Isolated I/O (Port-Mapped I/O):**
+    - Assigns I/O devices to a **separate address space** with dedicated "ports."
+    - CPU uses special I/O instructions (`IN`, `OUT`) to communicate.
+    - **Pros:** Full memory address space for RAM, clear separation of I/O.
+    - **Cons:** Requires special CPU instructions, limited addressing modes.
+
+### Peripheral Devices and Controllers
+
+### Peripheral Devices
+
+Hardware components external to the CPU and main memory, essential for a computer's functionality and interaction. They are categorized by their function:
+
+- **Input:** Keyboard, mouse, microphone (data *into* the computer).
+- **Output:** Monitor, printer, speakers (data *out of* the computer).
+- **Storage:** HDD, SSD, USB drive (persistent data storage).
+- **Communication:** NIC, modem, Bluetooth (connecting to networks/other devices).
+
+They provide human-computer interaction, data persistence, and connectivity.
+
+### Peripheral Controllers
+
+Specialized electronic circuits that act as an **interface** between the CPU/system bus and a peripheral device. They are necessary because:
+
+- They bridge **speed mismatches** and convert **data formats**.
+- They manage device-specific **communication protocols**.
+- They provide **registers** (data, status, control) for CPU interaction.
+
+The CPU communicates with the *controller*, which then manages the *peripheral device*, abstracting complexity and enabling modular system design. Examples include USB controllers, SATA controllers, and Ethernet controllers.
+
+### Bus Architectures: PCI, USB
+
+Bus architectures are communication pathways in a computer.
+
+- **PCI (Peripheral Component Interconnect):**
+    - An **internal bus** for connecting high-speed expansion cards (like graphics cards, network cards) directly to the motherboard.
+    - Mainly superseded by **PCI Express (PCIe)**, which uses faster serial communication.
+- **USB (Universal Serial Bus):**
+    - An **external bus** for standardizing connections of a wide range of peripherals (keyboards, mice, printers, external drives).
+    - Supports hot-plugging, power delivery, and is ubiquitous for external device connectivity.
+
+**In short:** PCI is for internal, high-performance components, while USB is for versatile, convenient external device connections.
+
+## 📙 **Stage 7: Performance and Optimization**
+
+> 🧠 Goal: Evaluate and optimize computer performance.
+> 
+
+### Performance Metrics: CPI, MIPS, FLOPS
+
+Here's a brief breakdown of CPI, MIPS, and FLOPS:
+
+- **CPI (Cycles Per Instruction):** Measures how efficiently a processor executes instructions, indicating the *average number of clock cycles* needed per instruction. **Lower CPI is better.** It's a micro-architectural efficiency metric.
+- **MIPS (Millions of Instructions Per Second):** Measures the raw speed of a processor by counting *millions of instructions executed per second*. While intuitive, it's often a **misleading metric for comparison across different processor architectures** because instructions vary greatly in complexity.
+- **FLOPS (Floating-Point Operations Per Second):** Measures a computer's performance for *floating-point (decimal number) calculations*. This is the key metric for scientific, graphics, and AI workloads where precise, high-range numbers are critical. **Higher FLOPS is better for these specialized tasks.**
+
+### Amdahl’s Law
+
+### Amdahl's Law: The Parallelism Bottleneck
+
+**Amdahl's Law** states that the **maximum speedup** you can get from parallelizing a program is **limited by its sequential (non-parallelizable) portion**.
+
+**The core idea:** If a part of your program *must* run sequentially, then no matter how many processors you throw at the parallel part, you'll never make the entire program run faster than that sequential bottleneck.
+
+**Key takeaway:** To significantly speed up a program, you must **reduce the sequential portion** as much as possible. Simply adding more processors will eventually yield diminishing returns.
+
+### Benchmarks & Profiling
+
+Here's a concise summary of Benchmarks and Profiling:
+
+---
+
+### Benchmarks & Profiling
+
+- **Benchmarks:** Standardized tests or programs used to **measure and compare the overall performance** of hardware or software systems under predefined workloads.
+    - **Purpose:** Compare systems, evaluate designs, guide purchases, prevent performance regressions.
+    - **Example:** SPEC CPU, Cinebench.
+- **Profiling:** A dynamic analysis technique that **measures and analyzes the performance characteristics of a *specific running program*** to identify bottlenecks and inefficient code sections.
+    - **Purpose:** Pinpoint slow code (CPU), find memory leaks, identify I/O issues, optimize resource usage.
+    - **Example:** `perf`, `Valgrind`.
+
+**In short:** Benchmarks tell you **how fast a system is generally**, while Profiling tells you **why a *particular program* isn't running faster** and where to optimize it.
+
+### Power vs. Performance Trade-offs
+
+Here's a brief summary of Power vs. Performance Trade-offs:
+
+---
+
+### Power vs. Performance Trade-offs
+
+This is a fundamental challenge in computer architecture:
+
+- **Higher Performance often requires More Power:** Achieving faster speeds (higher clock rates, more complex operations) typically demands increased voltage and frequency, which significantly boost power consumption and heat generation.
+- **Lower Power often means Lower Performance:** Conversely, reducing power consumption (e.g., for battery life or cooling) often means sacrificing some performance by lowering clock speeds or using simpler designs.
+
+**Why it matters:**
+
+- **"Power Wall":** Limits how fast single cores can run due to heat dissipation.
+- **Battery Life:** Critical for mobile devices.
+- **Cooling Costs:** Major expense for data centers.
+
+**How it's managed:**
+Architects use techniques like **Dynamic Voltage and Frequency Scaling (DVFS)**, **multi-core processors**, and **specialized accelerators** to find the optimal balance, aiming for better "performance per watt."
+
+## 📗 **Stage 8: Parallelism & Multicore Systems**
+
+> 🧠 Goal: Understand the complexity of parallel computation.
+> 
+
+### Instruction-Level and Thread-Level Parallelism
+
+## Instruction-Level Parallelism (ILP)
+
+**ILP** is about a single processor core doing more work concurrently. It's largely handled by the hardware, hidden from the programmer. Think of it like a highly efficient chef who can chop vegetables while checking on a simmering pot. Techniques like **pipelining** (overlapping instruction stages) and **superscalar execution** (having multiple execution units) allow a core to process several instructions at once.
+
+---
+
+## Thread-Level Parallelism (TLP)
+
+**TLP** is about running multiple independent sequences of instructions, called threads or processes, at the same time. This is where **multicore processors** come in: each core can run a different thread simultaneously. It's like having multiple chefs, each cooking a separate dish at the same time. TLP requires programmers to explicitly design their software to divide tasks into parallel threads (e.g., using **Pthreads** or **OpenMP**).
+
+---
+
+In short, ILP speeds up *one* task within a single core, while TLP speeds up *multiple* tasks by running them on different cores.
+
+### Multicore Processors & SMP
+
+## 1. Multicore Processors
+
+A **multicore processor** is a single chip containing two or more complete CPU "cores." Instead of making one CPU faster, we put multiple CPUs on one chip. Each core can run instructions independently, allowing true simultaneous execution of multiple tasks or parts of a program. This is the foundation for modern parallel computing.
+
+---
+
+## 2. Symmetric Multiprocessing (SMP)
+
+**Symmetric Multiprocessing (SMP)** is an architecture where multiple identical processors (or cores) share access to a single, unified main memory. A single operating system instance manages all processors, treating them equally and distributing tasks among them. Modern multicore processors are the most common form of SMP, where all cores on the chip symmetrically share the system's memory and resources.
+
+---
+
+In short: **Multicore processors** provide the multiple "brains" on a single chip, and **SMP** is the way these brains work together by sharing memory and being managed by one operating system, enabling powerful parallel computing.
+
+### Cache Coherency & NUMA
+
+## 1. Cache Coherency
+
+**Cache Coherency** ensures that when multiple processor cores have private copies of the same data in their caches, they all see a consistent and up-to-date value. If one core changes the data, cache coherence protocols (like MESI) guarantee that other cores' stale copies are invalidated or updated, preventing incorrect results in parallel programs.
+
+---
+
+## 2. Non-Uniform Memory Access (NUMA)
+
+**Non-Uniform Memory Access (NUMA)** is a memory architecture for large multicore systems where memory is physically divided into "nodes," each connected directly to a subset of processors/cores. Accessing memory on the *local* node is much faster than accessing *remote* memory on another node. NUMA improves scalability but requires careful programming and OS scheduling to ensure data is processed closer to where it resides, minimizing slower remote accesses. Most modern NUMA systems are **cache-coherent (ccNUMA)**.
+
+### GPU Architecture & SIMD
+
+## 1. GPU Architecture
+
+A **Graphics Processing Unit (GPU)** is a specialized processor with hundreds to thousands of small, simple cores. Unlike CPUs (few powerful cores for sequential tasks), GPUs are built for **massive parallelism** and **high throughput**, making them ideal for tasks like graphics rendering, AI, and scientific computing that involve applying the same operation to vast amounts of data simultaneously. They have dedicated, high-bandwidth memory (VRAM).
+
+---
+
+## 2. Single Instruction, Multiple Data (SIMD)
+
+**Single Instruction, Multiple Data (SIMD)** is a parallel processing technique where a single instruction operates on multiple data elements at the same time. GPUs are essentially massive SIMD machines, taking advantage of **data-level parallelism**. While CPUs use SIMD extensions (like AVX) to process small batches of data, GPUs (often via a **SIMT** model, where groups of threads execute the same instruction) dedicate thousands of cores to simultaneously process different data, maximizing computational efficiency.
