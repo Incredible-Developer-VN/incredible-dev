@@ -8,11 +8,11 @@ Below is a list of lectures. Each lecture will be linked to its detailed notes a
 
 ## Lecture List
 
-1. [Lecture 1: What is an Operating System?](../01_What_is_an_Operating_System.md)
-2. [Lecture 2: Operating System Structures](../02_Four_Fundamental_OS_Concepts.md)
-3. Lecture 3: To be updated  
-4. Lecture 4: To be updated  
-5. Lecture 5: To be updated  
+1. [Lecture 1: What is an Operating System?](./CS162/01_What_is_an_Operating_System.md)
+2. [Lecture 2: Four Fundamental OS Concepts](./CS162/02_Four_Fundamental_OS_Concepts.md)
+3. [Lecture 3: The Fundamental Abstractions of Threads and Processes](./CS162/03_The_Fundamental_Abstractions_of_Threads_and_Processes.md)
+4. [Lecture 4: File and IO Abstractions](./CS162/04_File_and_IO_Abstractions.md)
+5. [Lecture 5: IPC, Pipes, and Sockets](./CS162/05_IPC_Pipes_and_Sockets.md)
 6. Lecture 6: To be updated  
 7. Lecture 7: To be updated  
 8. Lecture 8: To be updated  
