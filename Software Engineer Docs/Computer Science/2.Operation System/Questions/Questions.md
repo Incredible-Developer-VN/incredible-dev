@@ -2,12 +2,12 @@
 
 ---
 
-- What are the four fundamental operating system concepts discussed in this lecture, and briefly define each in your own words?
+- **What are the four fundamental operating system concepts discussed in this lecture, and briefly define each in your own words?**
     - **Thread (Execution Context):** A single, independent sequence of instructions that the CPU can execute. It's the smallest unit of execution that can be scheduled by the OS, characterized by its own program counter, registers, and stack. It represents "what is currently running."
     - **Address Space:** A set of memory addresses that a process can legally access. It provides an illusion of private memory for each process and is crucial for memory protection and isolation, preventing one program from interfering with another's memory.
     - **Process:** An instance of a running program. It encompasses an address space, one or more threads of execution, and various other resources (like open files, network connections, etc.). It's the primary unit of resource allocation and protection.
     - **Dual Mode Operation / Protection:** A hardware feature that allows the CPU to operate in at least two distinct modes: "user mode" (restricted privileges for applications) and "kernel mode" (full privileges for the operating system). This mechanism is vital for protecting the OS and isolating user programs from each other.
-- Explain the primary purpose of "dual-mode operation" in an operating system. Why is it essential for system security and stability?
+- **Explain the primary purpose of "dual-mode operation" in an operating system. Why is it essential for system security and stability?**
     
     The primary purpose of dual-mode operation is to protect the operating system from use programs and to protect user programs from each other. It establishes a clear boundary between the privileged OS kernel and unprivileged user applications.
     
@@ -16,7 +16,7 @@
     - **Protection:** It prevents user applications from directly accessing critical hardware resources (like I/O devices, memory management units) or sensitive kernel data structures.
     - **Isolation:** A faulty or malicious user program cannot directly crash the entire system or corrupt data belonging to other applications or the OS itself.
     - **Controlled Access:** User programs must go through well-defined, controlled interfaces (system calls) to request services from the OS, allowing the kernel to validate requests and maintain system integrity.
-- How does a "thread" differ from a "process"? Provide an analogy to illustrate their relationship.
+- **How does a "thread" differ from a "process"? Provide an analogy to illustrate their relationship.**
     - **Process:** A process is an independent program execution environment. It has its own dedicated address space, which means its memory is isolated from other processes. A process is also the unit of resource ownership (files, network connections, etc.).
     - **Thread:** A thread is a *lightweight* unit of execution *within* a process. Threads within the same process share the same address space and most of the process's resources. Each thread, however, has its program counter, register set, and stack, allowing it to execute independently.
     
@@ -25,7 +25,7 @@
     Imagine a **process** as an entire **factory**. The factory has its land (address space), its power supply, its raw materials, and its final products (resources).
     Inside this factory, there can be multiple **workers (threads)**. Each worker is doing a specific task on an assembly line (executing instructions). All workers share the same factory building (address space) and the factory's resources. If one worker goes on break, the other workers can continue their tasks. Each worker has their own set of tools (registers) and their task list (stack), but they all contribute to the overall output of the single factory.
     
-- What is an "address space," and why is it distinct from physical memory? How does the operating system utilize address spaces to achieve isolation between processes?
+- **What is an "address space," and why is it distinct from physical memory? How does the operating system utilize address spaces to achieve isolation between processes?**
     
     An **address space** is the range of memory addresses that a process can reference. It's the set of addresses that a program "sees" and uses.
     It is distinct from physical memory (the actual RAM chips) because:
@@ -37,10 +37,10 @@
     
     - **Memory Mapping:** The OS, with hardware support (like a Memory Management Unit - MMU), translates the virtual addresses used by a process into physical addresses in RAM.
     - **Protection Boundaries:** This translation mechanism ensures that a process can only access physical memory locations that have been explicitly mapped into *its own* virtual address space. If a process tries to access a virtual address that doesn't belong to it (i.e., not mapped to a valid physical page it's allowed to use), the MMU will trigger a "page fault" or "segmentation fault," which is an exception handled by the OS, usually resulting in the termination of the offending process. This prevents processes from reading or writing into each other's memory or the kernel's memory.
-- Describe the role of the Program Counter (PC) and registers within a thread's execution context.
+- **Describe the role of the Program Counter (PC) and registers within a thread's execution context.**
     - **Program Counter (PC):** Also known as the Instruction Pointer (IP), the Program Counter holds the memory address of the *next instruction* to be executed by the CPU for that specific thread. It's crucial for controlling the flow of execution. When a thread is suspended, its PC is saved so that execution can resume from the correct point when the thread is later rescheduled.
     - **Registers:** Registers are small, high-speed storage locations directly within the CPU. They hold data that the CPU is currently operating on or frequently needs to access (e.g., operands for arithmetic operations, addresses, temporary values). Each thread has its own set of register values. When the OS performs a context switch (switches from one thread to another), the current thread's register values are saved to memory (part of its Thread Control Block), and the next thread's register values are loaded into the CPU's registers. This ensures that when a thread resumes, its computational state is restored exactly as it was when it was last suspended.
-- Imagine you are designing a new operating system. How would you ensure that a misbehaving user program cannot crash the entire system or corrupt data belonging to other programs? Which of the fundamental concepts would you leverage most heavily?
+- **Imagine you are designing a new operating system. How would you ensure that a misbehaving user program cannot crash the entire system or corrupt data belonging to other programs? Which of the fundamental concepts would you leverage most heavily?**
     
     To ensure a misbehaving user program cannot crash the entire system or corrupt data, I would heavily leverage **Dual Mode Operation / Protection** and **Address Spaces**.
     
@@ -48,7 +48,7 @@
     
     - **Dual Mode Operation:** The user program would run in *user mode*, which is a restricted privilege level. This prevents it from directly executing privileged instructions (like disabling interrupts, accessing I/O hardware directly, or modifying the MMU tables). Any attempt to do so would result in a hardware trap to the kernel, which would then terminate the misbehaving program.
     - **Address Spaces:** Each user program would be assigned its own *virtual address space*. The hardware's Memory Management Unit (MMU), configured by the OS in kernel mode, would translate the virtual addresses used by the program into physical addresses. This ensures that a program can only access memory locations that have been explicitly mapped to its own address space. If it tries to access memory outside its assigned space (e.g., another program's memory or kernel memory), the MMU would detect this violation, generate an exception (like a page fault or segmentation fault), and transfer control to the kernel. The kernel would then typically terminate the offending program, preventing data corruption or system crashes.
-- A web browser typically runs as a single process, but it can have multiple tabs open simultaneously. Explain how threads are likely used within the web browser process to handle these multiple tabs efficiently.
+- **A web browser typically runs as a single process, but it can have multiple tabs open simultaneously. Explain how threads are likely used within the web browser process to handle these multiple tabs efficiently.**
     
     Threads are heavily used within a web browser process to handle multiple tabs efficiently. Here's how:
     
@@ -56,7 +56,7 @@
     - **Responsiveness:** If each tab were a separate process, switching between them would involve more overhead (context switching processes is heavier than threads). By using threads, the browser remains more responsive, as different parts of the application can continue to execute even if one part is blocked (e.g., waiting for network data).
     - **Shared Resources:** Since threads within the same process share the same address space, it's efficient for them to share common browser resources like network connections (though often managed by a dedicated network thread), rendering engines (shared libraries), and cache. This reduces memory footprint compared to having each tab be a completely separate process (though some browsers like Chrome now use multi-process architectures for stronger isolation, they still use threads *within* those processes).
     - **Parallelism (on multi-core CPUs):** On multi-core processors, the OS scheduler can run different threads of the browser process on different CPU cores simultaneously, further enhancing performance by achieving true parallelism for independent tab operations.
-- When a user application wants to perform an I/O operation (e.g., reading from a file), it cannot directly access the hardware. Explain the mechanism by which the application requests this operation from the operating system, and what happens in terms of mode transitions.
+- **When a user application wants to perform an I/O operation (e.g., reading from a file), it cannot directly access the hardware. Explain the mechanism by which the application requests this operation from the operating system, and what happens in terms of mode transitions.**
     
     When a user application wants to perform an I/O operation, it uses a **system call**. Here's the mechanism and mode transitions:
     
@@ -73,7 +73,7 @@
         - Restores the saved user program state (Program Counter, registers).
         - Changes the CPU's mode back from **Kernel Mode** to **User Mode**.
         - Returns control to the user application, which continues execution from where it left off, typically just after the system call instruction.
-- Consider a multi-core processor. How does the concept of "threads" allow the operating system to take advantage of these multiple cores to achieve true parallelism?
+- **Consider a multi-core processor. How does the concept of "threads" allow the operating system to take advantage of these multiple cores to achieve true parallelism?**
     
     On a multi-core processor, the concept of "threads" is fundamental to achieving true parallelism because:
     
@@ -81,7 +81,7 @@
     - **OS Scheduling:** The OS maintains a queue of ready-to-run threads. When a core becomes idle or needs a new task, the scheduler picks a thread from this queue and dispatches it to that core. With multiple cores, multiple threads can be dispatched and run *at the exact same time*.
     - **Sharing Resources:** Threads within the same process share the same address space. This makes it efficient for multi-threaded applications to cooperate on a common task, as they can easily access and manipulate shared data structures. For example, a single program might have one thread performing calculations and another thread updating a graphical user interface, both running concurrently on different cores.
     - **Scalability:** By allowing multiple threads to execute in parallel, multi-core processors can significantly speed up the execution of applications that are designed to be multi-threaded (e.g., scientific simulations, video rendering, web servers).
-- A `fork()` system call is used to create a new process. What resources are typically duplicated for the child process, and what resources might be shared or treated differently?
+- **A `fork()` system call is used to create a new process. What resources are typically duplicated for the child process, and what resources might be shared or treated differently?**
     
     When a `fork()` system call is made, a new child process is created that is (initially) an almost exact copy of the parent process.
     **Resources Typically Duplicated (Copy-on-Write often used for efficiency):**
@@ -98,7 +98,7 @@
     - **Inter-Process Communication (IPC) Channels:** Existing pipes, message queues, or semaphores that the parent had access to might be inherited, but they are specific IPC objects, not part of the address space copy.
     - **Page Tables:** While the child gets its own logical address space, the initial *page table entries* might point to the same physical pages as the parent due to Copy-on-Write. A new set of page tables for the child is created, but many entries initially point to shared physical pages.
     
-- Discuss the historical progression of memory management techniques, starting from simple approaches and leading to more complex ones. How did the limitations of earlier methods drive the development of concepts like virtual memory and address spaces?
+- **Discuss the historical progression of memory management techniques, starting from simple approaches and leading to more complex ones. How did the limitations of earlier methods drive the development of concepts like virtual memory and address spaces?**
     
     The progression of memory management techniques was driven by the need for better multi-programming, protection, and efficiency:
     
@@ -116,7 +116,7 @@
         - **Advantage:** Eliminates external fragmentation. Allows non-contiguous allocation of a process's memory in physical RAM. Enabled **virtual memory** as we know it.
     - **Virtual Memory & Address Spaces (Paging/Segmentation with Swapping):** The combination of paging (or segmentation) with swapping (moving pages/segments between RAM and disk) led to modern virtual memory. Each process gets its own virtual address space, which is much larger than available physical memory. Only necessary pages are loaded into RAM; others are swapped to disk.
         - **Key Driver:** The limitations of earlier methods (fragmentation, poor resource utilization, lack of robust protection, and the desire to run programs larger than physical memory) directly led to the development of virtual memory and the concept of isolated address spaces. Paging particularly made it efficient to provide each process with a large, private, virtual memory space while effectively utilizing fragmented physical memory.
-- Why is it important for the operating system to maintain a "Process Control Block" (PCB) for each process? What critical information is stored in the PCB?
+- **Why is it important for the operating system to maintain a "Process Control Block" (PCB) for each process? What critical information is stored in the PCB?**
     
     It is critically important for the operating system to maintain a **Process Control Block (PCB)** for each process because the PCB is the central data structure that encapsulates all the necessary information about a process. It's how the OS keeps track of, manages, and restores the state of each running program. Without PCBs, the OS wouldn't be able to switch between processes, schedule them, or manage their resources.
     
@@ -148,7 +148,7 @@
     
     In essence, the system would be extremely fragile and insecure, resembling early single-tasking, unprotected environments.
     
-- Explain how interrupts and exceptions serve as crucial mechanisms for transferring control from user mode to kernel mode. Provide an example of when each might occur.
+- **Explain how interrupts and exceptions serve as crucial mechanisms for transferring control from user mode to kernel mode. Provide an example of when each might occur.**
     
     Both interrupts and exceptions are mechanisms that cause a transfer of control from a currently executing program to the operating system kernel, always resulting in a transition from user mode to kernel mode. They differ primarily in their origin.
     
@@ -170,7 +170,7 @@
     
     In summary, both are critical for the OS to maintain control and respond to events, seamlessly transitioning from user mode to kernel mode to handle necessary actions and ensure system integrity.
     
-- What are the potential overheads associated with context switching between threads and processes? How might an operating system design mitigate these overheads?
+- **What are the potential overheads associated with context switching between threads and processes? How might an operating system design mitigate these overheads?**
     
     Context switching is the mechanism by which the CPU switches from executing one thread/process to another. While essential for multitasking, it incurs overheads.
     
@@ -203,3 +203,73 @@
     5. **Hyper-threading/Simultaneous Multi-threading (SMT):** While not strictly an OS mitigation, SMT (like Intel's Hyper-threading) allows a single physical core to appear as two logical cores to the OS. It shares most core resources but duplicates registers. This reduces some context switch overheads by allowing two threads to share execution resources more efficiently, as the core doesn't need to save/restore *all* its state for a very quick switch between logical threads.
 
 ---
+
+- **Why is Inter-Process Communication (IPC) necessary in an operating system?**  
+    IPC is necessary because processes are isolated in separate memory spaces for security and stability. This isolation prevents direct data sharing. IPC mechanisms allow processes to cooperate, synchronize, and exchange information, enabling complex applications to function correctly.
+
+- **What are the main performance drawbacks of using files for IPC?**  
+    Using files for IPC is slow due to:  
+    - **High Latency:** Disk I/O is much slower than memory access.  
+    - **Kernel Overhead:** Each operation involves system calls and disk scheduling.  
+    - **Synchronization Issues:** Concurrent access can cause data corruption unless slow file-locking is used.
+
+- **How does the kernel provide more efficient IPC than file-based communication?**  
+    The kernel offers IPC mechanisms like shared memory buffers or queues in RAM. Processes use file descriptors to access these buffers, enabling fast, memory-speed communication. The kernel also manages synchronization to prevent data corruption.
+
+- **What is a pipe in the context of an operating system?**  
+    A pipe is a unidirectional, kernel-managed communication channel. It consists of a fixed-size memory buffer with two file descriptors: one for reading and one for writing. Data flows in FIFO order from writer to reader.
+
+- **How do you create an unnamed pipe using the POSIX API, and what does the system call return?**  
+    Use `pipe(int filedes[2])`. On success, `filedes[0]` is the read end and `filedes[1]` is the write end of the pipe.
+
+- **Explain the unidirectional nature of a standard pipe.**  
+    Data can only flow from the write end to the read end. The write descriptor cannot be used to read, and the read descriptor cannot be used to write.
+
+- **What happens if a process writes to a full pipe?**  
+    The writing process blocks until space becomes available in the pipe buffer.
+
+- **What happens if a process reads from an empty pipe?**  
+    The reading process blocks until data is written into the pipe.
+
+- **What is the effect of closing the last write descriptor of a pipe?**  
+    The reader will receive an End-of-File (EOF) indication. Further reads return `0`, signaling no more data will arrive.
+
+- **What is a `SIGPIPE` signal, and when is it generated?**  
+    `SIGPIPE` is sent to a process that tries to write to a pipe whose read end has been closed. By default, this terminates the process.
+
+- **How can pipes be used to implement a shell pipeline like `ls -l | grep ".c"`?**  
+    The shell creates a pipe and forks two child processes. The first child redirects its output to the pipe and runs `ls -l`. The second child redirects its input from the pipe and runs `grep ".c"`. Data flows from `ls -l` to `grep` through the pipe.
+
+- **What is a socket, and how does it abstract network communication?**  
+    A socket is an endpoint for communication, represented as a file descriptor. It allows processes to send and receive data over a network using the same `read()` and `write()` interface as files and pipes.
+
+- **Describe the client-server model.**  
+    The server creates a socket, binds it to an address and port, and listens for connections. The client creates a socket and connects to the server. Once connected, both can communicate via their sockets.
+
+- **Why is concurrency important for network servers?**  
+    Concurrency allows a server to handle multiple clients at once. Without it, each client would have to wait for the previous one to finish, leading to poor performance.
+
+- **What are two main strategies for server concurrency?**  
+    1. **Multi-process:** The server forks a new process for each client.  
+    2. **Multi-threaded:** The server creates a new thread for each client.
+
+- **Compare multiple processes and multiple threads for server concurrency.**  
+    | Feature         | Multiple Processes                | Multiple Threads                |
+    |-----------------|----------------------------------|---------------------------------|
+    | Isolation       | High (separate memory spaces)     | Low (shared memory)             |
+    | Overhead        | High (expensive to create)        | Low (lightweight to create)     |
+    | Data Sharing    | Difficult (needs IPC)             | Easy (shared variables, needs locks) |
+
+- **What is a thread pool, and how does it work in a server?**  
+    A thread pool is a set of pre-created worker threads. Incoming requests are placed in a queue, and idle threads pick up tasks from the queue, process them, and return to the pool.
+
+- **How does a thread pool help manage server resources during traffic spikes?**  
+    A thread pool limits the number of concurrent threads, preventing resource exhaustion. Excess requests wait in the queue until a thread is available, maintaining stability.
+
+- **How are the programming interfaces for pipes and sockets similar, and why is this beneficial?**  
+    Both use file descriptors and the same POSIX I/O calls (`read()`, `write()`, `close()`). This uniformity simplifies development and code reuse.
+
+- **What is the key difference between a pipe and a socket regarding communication scope?**  
+    - **Pipe:** Only for processes on the same machine.  
+    - **Socket:** Can be used for communication between processes on the same or different machines over a network.
+
