@@ -13,7 +13,7 @@ Below is a list of lectures. Each lecture will be linked to its detailed notes a
 3. [Lecture 3: The Fundamental Abstractions of Threads and Processes](./CS162/03_The_Fundamental_Abstractions_of_Threads_and_Processes.md)
 4. [Lecture 4: File and IO Abstractions](./CS162/04_File_and_IO_Abstractions.md)
 5. [Lecture 5: IPC, Pipes, and Sockets](./CS162/05_IPC_Pipes_and_Sockets.md)
-6. Lecture 6: To be updated  
+6. [Lecture 6: Synchronization: Concurrency and Mutual Exclusion](./CS162/06_Synchronization_Concurrency_and_Mutual_Exclusion.md)
 7. Lecture 7: To be updated  
 8. Lecture 8: To be updated  
 9. Lecture 9: To be updated  
