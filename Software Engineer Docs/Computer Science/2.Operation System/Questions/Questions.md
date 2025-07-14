@@ -273,3 +273,186 @@
     - **Pipe:** Only for processes on the same machine.  
     - **Socket:** Can be used for communication between processes on the same or different machines over a network.
 
+---
+
+- **What is concurrency? How is it different from parallelism?**
+
+    Concurrency is the ability of a system to run multiple tasks or parts of a program in overlapping time periods. It's about dealing with many things at once. Parallelism is the ability of a system to run multiple tasks simultaneously, typically by using multiple CPU cores.
+    
+    You can have concurrency on a single-core processor through time-slicing (the OS rapidly switches between tasks), but you can only have true parallelism on a multi-core processor. Concurrency is about the structure of the program (managing multiple logical flows), while parallelism is about the execution (doing multiple things at the exact same time). Think of a chef juggling multiple recipes (concurrency) versus having multiple chefs working on different recipes at the same time (parallelism).
+
+- **What is a race condition? Give a simple example.**
+
+    A race condition occurs when the behavior of a system depends on the unpredictable timing or interleaving of operations from multiple threads or processes. It happens when multiple threads access shared data, and at least one of them is a write operation.
+    
+    The classic example is two threads incrementing a shared counter. If Thread A reads the value, then Thread B reads the value *before* Thread A can write its incremented value back, both threads will write the same value, and one increment will be lost. The final result depends entirely on which thread "wins the race."
+
+- **What is a critical section, and what are the three requirements for a solution to the critical section problem?**
+
+    A critical section is a segment of code that accesses shared resources and must not be executed by more than one thread at a time. A valid solution must satisfy three properties:
+
+    1.  **Mutual Exclusion:** If one thread is in its critical section, no other thread can be in its critical section.
+    2.  **Progress:** If no thread is in a critical section and some threads want to enter, only those threads not in their remainder sections can participate in the decision of which will enter next, and this selection cannot be postponed indefinitely.
+    3.  **Bounded Waiting:** There must be a limit on the number of times other threads are allowed to enter their critical sections after a thread has made a request to enter its own and before that request is granted.
+    
+    Mutual Exclusion is the core safety property. Progress ensures the system doesn't halt if a resource is free. Bounded Waiting ensures fairness and prevents starvation, where a thread is perpetually denied access.
+
+- **What is a mutex (lock)? How does it work?**
+
+    A mutex, short for "mutual exclusion," is a synchronization primitive used to protect shared resources. It acts like a key. A thread must `acquire()` the mutex before entering a critical section and `release()` it upon exiting. If a thread tries to acquire a mutex that is already held by another thread, it will be blocked until the mutex is released.
+    
+    A mutex is essentially a variable that can be in one of two states: locked or unlocked. The `acquire()` and `release()` operations must be **atomic**, meaning they are indivisible and cannot be interrupted. This atomicity is usually guaranteed by the hardware (e.g., using instructions like `test-and-set` or `compare-and-swap`).
+
+- **What is the difference between a spinlock and a regular mutex (a blocking lock)? When would you use one over the other?**
+
+    When a thread tries to acquire a locked **spinlock**, it "spins" in a tight loop, repeatedly checking if the lock is free. This consumes CPU cycles. When a thread tries to acquire a locked **mutex**, the operating system puts the thread to sleep (blocks it) and wakes it up when the lock is released. This avoids wasting CPU but incurs the overhead of a context switch.
+    
+    You should use a **spinlock** when the expected wait time for the lock is very short—shorter than the time it would take to perform two context switches (one to sleep, one to wake up). This makes them suitable for low-level kernel programming or specific multi-core scenarios where the lock holder is guaranteed to release the lock quickly. For most application-level programming, **blocking mutexes** are preferred because holding a lock for a long time while spinning would waste significant CPU resources.
+
+- **What is a semaphore? What are the two types?**
+
+    A semaphore is a synchronization counter that controls access to a shared resource. It supports two atomic operations: `P()` (or `wait()`) which decrements the count (and blocks if the count becomes negative), and `V()` (or `signal()`) which increments the count (and potentially wakes up a blocked thread).
+    The two types are:
+
+    1.  **Binary Semaphore:** The count can only be 0 or 1. It functions as a mutex.
+    2.  **Counting Semaphore:** The count can range over an unrestricted domain. It's used to control access to a pool of `N` resources.
+
+    A counting semaphore initialized to `N` allows up to `N` threads to pass the `wait()` operation. The `(N+1)`-th thread will block until one of the first `N` threads calls `signal()`, freeing up a slot. This is useful for things like managing a pool of database connections or worker threads.
+
+- **Can you implement a mutex using a semaphore?**
+
+    Yes. You can use a binary semaphore, which is a semaphore initialized with a value of 1.
+
+    * The `acquire()` operation of the mutex maps to the `P()` or `wait()` operation of the semaphore.
+    * The `release()` operation of the mutex maps to the `V()` or `signal()` operation of the semaphore.
+
+    When the semaphore is initialized to 1, the first thread to call `wait()` will decrement the count to 0 and proceed. Any subsequent thread calling `wait()` will decrement the count to a negative value and block. When the first thread is done, it calls `signal()`, incrementing the count back to 0 and waking up one of the waiting threads.
+
+- **Can you implement a semaphore using a mutex and a condition variable?**
+
+    Yes. You need a mutex to protect the semaphore's internal counter, and a condition variable to block threads when the counter is not positive.
+
+    ```
+    class Semaphore {
+      int count;
+      Mutex mutex;
+      ConditionVariable cv;
+    
+      P() {
+        mutex.acquire();
+        while (count == 0) {
+          cv.wait(&mutex); // Atomically releases mutex and sleeps
+        }
+        count--;
+        mutex.release();
+      }
+    
+      V() {
+        mutex.acquire();
+        count++;
+        cv.signal(); // Wakes up one waiting thread
+        mutex.release();
+      }
+    }
+    ```
+
+    The mutex ensures that checking and modifying the `count` is atomic. The condition variable `cv` is used to manage the waiting. When a thread must wait (because `count` is 0), it calls `cv.wait()`, which atomically releases the mutex so other threads (specifically, one calling `V()`) can run. When `V()` increments the count, it signals the CV to wake up a waiting thread. The `while` loop is crucial to handle spurious wakeups.
+
+- **What is a monitor, and how does it differ from a semaphore?**
+
+    A monitor is a higher-level synchronization construct that bundles shared data, the procedures that operate on that data, and an implicit mutual exclusion mechanism. Only one thread can be active within a monitor's methods at any given time. Semaphores, by contrast, are lower-level primitives that are essentially just counters with `P/V` operations.
+
+    Monitors are a language feature (like in Java with `synchronized` methods or blocks), making them generally easier and safer to use. The compiler handles the locking and unlocking automatically. With semaphores, the programmer is responsible for calling `wait()` and `signal()` correctly around the critical section, which is more error-prone (e.g., forgetting to call `signal()` can lead to deadlock).
+
+- **What is a condition variable and why is it needed?**
+
+    A condition variable (CV) is a synchronization primitive that allows a thread to block until a specific condition becomes true. It is almost always used in conjunction with a mutex. A thread can `wait()` on a CV, which atomically releases the associated mutex and puts the thread to sleep. Another thread can `signal()` the CV to wake up a waiting thread.
+
+    A mutex alone can't handle all synchronization scenarios. A mutex is for protecting a short critical section. What if a thread enters a critical section, acquires a lock, but then finds that it cannot proceed until some condition is met (e.g., a buffer is no longer empty)? It cannot just hold the lock and spin, as that would prevent any other thread from entering and making the condition true. A CV allows the thread to `wait()` efficiently by releasing the lock and sleeping, allowing other threads to make progress.
+
+- **Why must you always hold a mutex when calling `wait()` or `signal()` on a condition variable?**
+
+    You must hold the mutex for two main reasons:
+    1.  **Protecting the Condition:** The condition being checked (e.g., `while (buffer.isEmpty())`) involves shared variables. The mutex ensures that checking this condition and deciding to go to sleep is an atomic operation. Without the lock, another thread could change the condition *after* you check it but *before* you call `wait()`, leading to a lost wakeup.
+    2.  **Atomicity of `wait()`:** The `wait()` operation itself is defined to atomically release the mutex and put the thread to sleep. It needs to be passed the mutex so it knows which lock to release.
+
+    Consider this race without a lock:
+
+    1.  Thread A checks `buffer.isEmpty()` (it's true).
+    2.  Context switch to Thread B.
+    3.  Thread B adds an item to the buffer and calls `signal()` on the CV. No one is waiting yet, so the signal is lost.
+    4.  Context switch back to Thread A.
+    5.  Thread A now calls `wait()` and goes to sleep forever, because it missed the signal.
+    
+    Holding the mutex prevents this race.
+
+- **Why must you re-check the condition in a `while` loop after waking up from a `wait()` on a condition variable?**
+
+    You must use a `while` loop (e.g., `while (!condition) { cv.wait(); }`) for two primary reasons:
+    1.  **Thundering Herd / Intervening Threads:** When `signal()` is called, it wakes up a waiting thread. However, before the woken thread can reacquire the mutex and run, another thread might have run, acquired the lock, and changed the condition back to false. The woken thread must re-check to ensure the condition is still true.
+    2.  **Spurious Wakeups:** For performance and implementation reasons on some systems, a thread might wake up from a `wait()` call without having been `signal()`ed at all. This is called a spurious wakeup. The `while` loop protects against this by forcing the thread to re-evaluate the condition before proceeding.
+
+    Always assume that waking up from `wait()` is just a *hint* that the condition *might* be true. The `while` loop ensures correctness by verifying the state of the world before moving on.
+
+- **What's the difference between `signal()` and `broadcast()` on a condition variable?**
+
+    * **`signal()` (or `notify()`):** Wakes up *exactly one* of the threads waiting on the condition variable (if any). The choice of which thread is awakened is up to the scheduler.
+    * **`broadcast()` (or `notifyAll()`):** Wakes up *all* of the threads currently waiting on the condition variable.
+
+    You use `signal()` when you know that only one thread can make progress (e.g., adding one item to a buffer can only satisfy one consumer). Using `signal()` is more efficient as it avoids the "thundering herd" problem where many woken threads compete for the same lock, only for one to succeed and the rest to go back to sleep. You use `broadcast()` when a state change could potentially allow multiple waiting threads to proceed (e.g., a flag changing from "read-only" to "write-enabled" might unblock several writer threads).
+
+- **What is deadlock? What are the four necessary conditions for it to occur?**
+
+    Deadlock is a state where two or more threads are blocked forever, each waiting for a resource that is held by another thread in the set. The four necessary conditions are:
+    1.  **Mutual Exclusion:** Resources involved must be non-shareable; only one thread can use a resource at a time.
+    2.  **Hold and Wait:** A thread is holding at least one resource and is waiting to acquire additional resources held by other threads.
+    3.  **No Preemption:** A resource can only be released voluntarily by the thread holding it after that thread has completed its task.
+    4.  **Circular Wait:** A set of waiting threads {T0, T1, ..., Tn} must exist such that T0 is waiting for a resource held by T1, T1 is waiting for a resource held by T2, ..., Tn is waiting for a resource held by T0.
+
+    All four conditions must be present for a deadlock to occur. The primary way to handle deadlocks is to prevent one of these conditions. The most common strategy is to prevent Circular Wait by enforcing a strict ordering on lock acquisitions (e.g., always lock mutex A before mutex B).
+
+- **What is starvation? How is it different from deadlock?**
+
+    Starvation, or indefinite postponement, is a situation where a ready-to-run thread is consistently overlooked by the scheduler and never gets to run, thus never making progress. Deadlock is a specific form of starvation where a *group* of threads are all blocked waiting on each other, and *none* of them can ever make progress.
+
+    In starvation, the system as a whole may still be making progress, but one particular thread is not. For example, if a thread has a low priority, it might never be chosen to run if there is a continuous stream of high-priority threads. In deadlock, the involved threads are not just low-priority; they are in a blocked state and can *never* be chosen by the scheduler until a resource they are waiting for is released, which will never happen. All deadlocked threads are starving, but not all starving threads are deadlocked.
+
+- **What is the ABA problem?**
+
+    The ABA problem is a concurrency bug that can occur in non-blocking synchronization schemes that use atomic instructions like `compare-and-swap` (CAS). A thread reads a value 'A' from a shared memory location. It then performs some work. Before it tries to update the location with a new value using CAS, another thread manages to change the value from 'A' to 'B' and then back to 'A'. When the first thread performs its CAS, it sees the value is still 'A' and incorrectly assumes nothing has changed, so the swap succeeds, potentially corrupting data.
+
+    The CAS operation checks `(memory_location == expected_value)`. It doesn't check the history of the value. The ABA problem highlights that just because the value is the same doesn't mean the underlying state it represents is the same. This is often solved by using a "versioned" pointer or a double-word CAS, where you check both the value and a version counter.
+
+- **Describe the classic Readers-Writers problem.**
+
+    The Readers-Writers problem is a classic synchronization scenario where a shared data structure is accessed by two types of threads: "readers" who only observe the data, and "writers" who modify it. The synchronization constraints are:
+    1.  Any number of readers can access the data simultaneously.
+    2.  Only one writer can access the data at any given time.
+    3.  If a writer is accessing the data, no reader can access it.
+
+    The challenge is to design a synchronization scheme that satisfies these rules. There are different variations, such as giving priority to readers (which can starve writers) or giving priority to writers (which can starve readers). A common solution involves a mutex, a condition variable, and a counter for the number of active readers.
+
+- **What is an atomic operation? Give an example.**
+
+    An atomic operation is a sequence of one or more instructions that appears to the rest of the system to occur instantaneously. It cannot be interrupted or seen as partially complete by other threads.
+
+    A simple `x++` in a high-level language is not atomic. It compiles down to a read, a modify, and a write instruction. Between these three steps, another thread can interfere. Hardware provides special instructions to achieve atomicity. Examples include:
+
+    * **`Test-and-Set`:** Atomically sets a memory location to `true` and returns its old value.
+    * **`Compare-and-Swap (CAS)`:** Atomically compares the content of a memory location to a given value and, if they are the same, modifies the contents of that memory location to a new given value.
+    
+    These are the building blocks upon which higher-level primitives like mutexes and semaphores are built.
+
+- **What is a reentrant mutex (or recursive lock)?**
+
+    A reentrant mutex is a type of mutex that can be acquired multiple times by the same thread without causing a deadlock. The mutex maintains an ownership count. The first time a thread acquires it, the count becomes 1. Subsequent acquisitions by the same thread increment the count. The lock is only fully released when the owning thread has performed a corresponding number of `release()` calls, bringing the count back to 0.
+
+    This is useful in situations like recursive functions that need to lock a shared resource. If a standard mutex were used, a recursive call would try to acquire a lock it already holds, causing the thread to deadlock with itself. With a reentrant mutex, the recursive call successfully "re-acquires" the lock, and the lock is only freed for other threads once the entire chain of recursive calls has unwound.
+
+- **What is a memory barrier (or memory fence)?**
+
+    A memory barrier is a low-level instruction that forces a specific ordering on memory operations. It ensures that memory operations issued *before* the barrier are completed before memory operations issued *after* the barrier are allowed to begin.
+
+    Modern CPUs and compilers can reorder instructions to improve performance. For example, they might move a memory write to happen earlier or later than it appears in the code. In a multi-threaded context, this reordering can break synchronization logic that relies on a specific order of writes and reads. A memory barrier prevents this reordering across the barrier, making the memory effects of one thread visible to others in a predictable order. They are crucial for implementing lock-free data structures and even for the correct implementation of locks themselves.
+
+---
