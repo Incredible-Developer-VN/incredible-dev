@@ -146,8 +146,100 @@ Understanding this foundation sets the stage for diving deeper into each layer o
 ---
 
 
-
 ## 1.2 The Network Edge
+
+### 🌐 What is the Network Edge?
+
+The **network edge** refers to the **outermost part of the Internet**, where **end systems (hosts)** are located. These are the devices that **generate and consume data**, such as:
+
+- Laptops
+- Smartphones
+- PCs
+- Servers
+
+These devices communicate over the Internet using **application-layer protocols** like HTTP, FTP, SMTP, etc.
+
+---
+
+### 🧑‍💻 End Systems: Clients and Servers
+
+End systems interact using one of two architectural models:
+
+#### 1. **Client-Server Architecture**
+
+- A **client** requests services.
+- A **server** provides services.
+- The server is always **on and reachable**.
+- Example: a browser (client) requesting a webpage from a web server.
+
+#### 2. **Peer-to-Peer (P2P) Architecture**
+
+- No dedicated server.
+- Peers (hosts) act as **both clients and servers**.
+- Example: BitTorrent file sharing.
+- Advantages: scalability, resource sharing
+- Challenges: security, reliability
+
+---
+
+### 📶 Access Networks
+
+Access networks connect **end systems to the first router** (also known as the edge router) in the Internet. These are the entry points to the global Internet.
+
+#### Common access network technologies:
+
+| Type                  | Examples            | Description                |
+| --------------------- | ------------------- | -------------------------- |
+| **Residential**       | DSL, Cable, FTTH    | Common for homes           |
+| **Mobile**            | 4G, 5G              | Wireless cellular networks |
+| **Enterprise**        | Ethernet LAN        | High-speed, wired access   |
+| **Campus/University** | Ethernet LAN, Wi-Fi | Local network access       |
+
+---
+
+### ⚙️ Physical Media (Transmission Medium)
+
+Data travels through the Internet via **physical transmission media**, which can be:
+
+#### 1. **Guided Media** (signals follow a physical path):
+
+- Twisted-pair copper wires (used in Ethernet and DSL)
+- Coaxial cable (used in cable networks)
+- Optical fiber (very high-speed data transmission)
+
+#### 2. **Unguided Media** (wireless transmission):
+
+- Radio (Wi-Fi, 4G, 5G)
+- Microwave
+- Satellite communication
+- Infrared
+
+---
+
+### 📊 Performance Metrics
+
+Network performance between end systems and the edge is determined by several key metrics:
+
+| Metric                     | Description                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------- |
+| **Bandwidth (Throughput)** | Rate of data transfer (bits per second)                                            |
+| **Latency (Delay)**        | Time it takes for data to travel from source to destination                        |
+| **Packet Loss**            | Percentage of packets lost in transmission                                         |
+| **Jitter**                 | Variation in packet delay – important for real-time apps like voice or video calls |
+
+---
+
+### ✅ Summary
+
+The **network edge** consists of:
+
+- **End systems** (clients and servers) that communicate using application-layer protocols
+- **Access networks** that connect devices to the Internet
+- **Physical transmission media** that carry data
+- **Performance metrics** that describe the quality of a connection
+
+> It is at the edge where data originates and terminates, and where the user experience begins.
+
 
 ## 1.3 The Network Core
 
