@@ -254,11 +254,11 @@
     2. **Multi-threaded:** The server creates a new thread for each client.
 
 - **Compare multiple processes and multiple threads for server concurrency.**  
-    | Feature         | Multiple Processes                | Multiple Threads                |
-    |-----------------|----------------------------------|---------------------------------|
-    | Isolation       | High (separate memory spaces)     | Low (shared memory)             |
-    | Overhead        | High (expensive to create)        | Low (lightweight to create)     |
-    | Data Sharing    | Difficult (needs IPC)             | Easy (shared variables, needs locks) |
+    | Feature      | Multiple Processes            | Multiple Threads                     |
+    | ------------ | ----------------------------- | ------------------------------------ |
+    | Isolation    | High (separate memory spaces) | Low (shared memory)                  |
+    | Overhead     | High (expensive to create)    | Low (lightweight to create)          |
+    | Data Sharing | Difficult (needs IPC)         | Easy (shared variables, needs locks) |
 
 - **What is a thread pool, and how does it work in a server?**  
     A thread pool is a set of pre-created worker threads. Incoming requests are placed in a queue, and idle threads pick up tasks from the queue, process them, and return to the pool.
@@ -456,3 +456,104 @@
     Modern CPUs and compilers can reorder instructions to improve performance. For example, they might move a memory write to happen earlier or later than it appears in the code. In a multi-threaded context, this reordering can break synchronization logic that relies on a specific order of writes and reads. A memory barrier prevents this reordering across the barrier, making the memory effects of one thread visible to others in a predictable order. They are crucial for implementing lock-free data structures and even for the correct implementation of locks themselves.
 
 ---
+
+### **What is the purpose of a CPU scheduler?**
+To decide which of the ready-to-run processes/threads gets the CPU next. It’s crucial for performance, fairness, responsiveness, and resource utilization.
+
+### **What are the key goals of scheduling in an OS?**
+- CPU Utilization
+- Throughput
+- Turnaround Time
+- Waiting Time
+- Response Time
+- Fairness
+- Predictability
+
+### **Explain the difference between preemptive and non-preemptive scheduling.**
+- **Preemptive:** OS can forcibly switch out a running process.
+- **Non-preemptive:** Process runs until it yields, blocks, or exits.
+
+### **What is starvation? How can it be avoided?**
+Starvation happens when a process waits indefinitely due to others being continuously scheduled.
+
+**Avoidance techniques:**
+- Priority aging
+- Fair-share scheduling
+- Time slice adjustments
+
+### **Name and briefly describe four classic scheduling algorithms.**
+- **FCFS:** First-Come, First-Served  
+- **SJF/SRTF:** Shortest Job First / Shortest Remaining Time First  
+- **RR:** Round Robin  
+- **Priority Scheduling:** Based on assigned priority
+
+---
+
+## **Comparative and Analytical Questions**
+
+### **Compare Round Robin and FCFS in terms of response time and throughput.**
+- **RR** has better response time due to time slicing.
+- **FCFS** may cause long waits (convoy effect).
+- RR introduces more context switching overhead.
+
+### **Why is SJF considered optimal for average waiting time?**
+Because it always runs the job with the shortest execution time first, reducing the total waiting time for subsequent jobs.
+
+### **What is a time quantum in Round Robin? What happens if it's too short or too long?**
+- Too short → too many context switches (overhead)
+- Too long → behaves like FCFS, poor responsiveness
+
+### **What causes a deadlock? List the Coffman conditions.**
+Deadlock occurs when:
+- Mutual Exclusion
+- Hold and Wait
+- No Preemption
+- Circular Wait
+
+### **How can you prevent deadlocks in a system?**
+Break any of the Coffman conditions:
+- Request all resources at once
+- Use global ordering
+- Allow preemption
+- Avoid circular wait
+
+---
+
+## **Real-Time Scheduling Questions**
+
+### **What is the difference between hard real-time and soft real-time systems?**
+- **Hard real-time:** Missing a deadline = failure
+- **Soft real-time:** Occasional misses are acceptable
+
+### **Describe Rate Monotonic Scheduling.**
+- A static priority scheduling algorithm
+- Shorter periods → higher priority
+- Proven to be optimal among fixed-priority schemes under specific conditions
+
+### **What is the Banker's Algorithm?**
+A deadlock-avoidance algorithm that grants resource requests only if the system stays in a safe state.
+
+### **What is priority inversion? How can it be resolved?**
+Occurs when a low-priority thread holds a resource needed by a higher-priority thread.
+
+**Solution:**  
+Use **priority inheritance** to temporarily boost the lower thread’s priority.
+
+### **What is a safe state in the context of deadlock avoidance?**
+A system is in a **safe state** if there exists some execution order where all processes can complete without deadlock.
+
+---
+
+## **Scenario-Based / Coding-Style Questions**
+
+### **Given processes with arrival and burst times, simulate FCFS/SJF/RR and calculate waiting/turnaround times.**
+> These types of questions require:
+- Drawing Gantt chart
+- Calculating each metric
+- Comparing outcomes for different algorithms
+
+### **How would you implement a fair scheduler in code?**
+**Answer (conceptual):**
+- Maintain virtual runtime for each thread
+- Pick the one with least virtual time (CFS in Linux)
+- Or assign weights and proportionally divide CPU time
